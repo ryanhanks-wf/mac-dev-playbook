@@ -5,6 +5,8 @@
 
 
   vars:
+    - git_user_name: "Ryan Hanks"
+    - git_user_email: ryan.hanks@workiva.com
     - osx_defaults:
       - domain: 'com.apple.dock'
         key: 'autohide'
@@ -31,7 +33,7 @@
     - vars/main.yml
 
   tasks:
-
+    - include: roles/roderik.superlumic-homebrew/tasks/main.yml
     # - include: roles/roderik.superlumic-osx-defaults/tasks/main.yml
     - name: set never sleep
       become: yes
