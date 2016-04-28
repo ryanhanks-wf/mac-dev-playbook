@@ -1,20 +1,125 @@
 ---
 - hosts: localhost
-  user: jgeerling
+  user: ryanhanks
   connection: local
+
+
+  vars:
+    - osx_defaults:
+      - domain: 'com.apple.dock'
+        key: 'autohide'
+        type: boolean
+        value: true
+      - domain: 'com.apple.dock'
+        key: 'minimize-to-application'
+        type: integer
+        value: 1
+      - domain: 'NSGlobalDomain'
+        key: 'AppleKeyboardUIMode'
+        type: integer
+        value: 3
+      - domain: 'NSGlobalDomain'
+        key: 'KeyRepeat'
+        type: integer
+        value: 0
+      - domain: 'NSGlobalDomain'
+        key: 'InitialKeyRepeat'
+        type: integer
+        value: 10
 
   vars_files:
     - vars/main.yml
 
-  roles:
-    - geerlingguy.homebrew
-    - geerlingguy.dotfiles
-
   tasks:
-    - include: tasks/ansible-setup.yml
-    - include: tasks/preferences.yml
 
-    # TODO: Use sudo once .osx can be run via root with no user interaction.
-    - name: Run .osx dotfiles.
-      shell: ~/.osx --no-restart
-      changed_when: false
+    # - include: roles/roderik.superlumic-osx-defaults/tasks/main.yml
+    - name: set never sleep
+      become: yes
+      become_method: sudo
+      shell: pmset  -a sleep 0
+    - name: add to sudoers without password
+      become: yes
+      lineinfile: >
+        dest=/etc/sudoers
+        regexp="{{ item.regexp }}"
+        line="{{ item.line }}"
+        state=present
+        create=true
+      with_items:
+        - { regexp: '^ryanhanks', line: 'ryanhanks ALL=(ALL) NOPASSWD: ALL' }
+
+    - name: install cask applications
+      homebrew_cask: name={{item}} state=present
+      with_items:
+        - google-chrome
+        - google-hangouts
+        - pycharm
+        - hipchat
+        - atom
+        - vmware-fusion
+
+
+      # - domain: 'NSGlobalDomain'
+      #   key: 'NSTableViewDefaultSizeMode'
+      #   type: integer
+      #   value: 1
+      # - domain: 'com.apple.screencapture'
+      #   key: 'type'
+      #   type: string
+      #   value: png
+      # - domain: 'NSGlobalDomain'
+      #   key: 'KeyRepeat'
+      #   type: integer
+      #   value: 2
+      # - domain: 'NSGlobalDomain'
+      #   key: 'InitialKeyRepeat'
+      #   type: integer
+      #   value: 15
+      # - domain: 'com.apple.menuextra.clock'
+      #   key: 'DateFormat'
+      #   type: string
+      #   value: EEE MMM d  HH:mm
+      # - domain: 'com.apple.menuextra.battery'
+      #   key: 'ShowPercent'
+      #   type: string
+      #   value: 'YES'
+      # - domain: 'com.apple.finder'
+      #   key: 'FXPreferredViewStyle'
+      #   type: string
+      #   value: "clmv"
+      # - domain: 'NSGlobalDomain'
+      #   key: 'NSNavPanelExpandedStateForSaveMode'
+      #   type: boolean
+      #   value: true
+      # - domain: 'NSGlobalDomain'
+      #   key: 'PMPrintingExpandedStateForPrint'
+      #   type: boolean
+      #   value: true
+      # - domain: 'com.apple.dock'
+      #   key: 'tilesize'
+      #   type: float
+      #   value: 32
+      # - domain: 'com.apple.dock'
+      #   key: 'autohide-time-modifier'
+      #   type: int
+      #   value: 0
+      # - domain: 'com.apple.dock'
+      #   key: 'autohide-delay'
+      #   type: int
+      #   value: 0
+      # - domain: 'NSGlobalDomain'
+      #   key: 'NSQuitAlwaysKeepsWindows'
+      #   type: boolean
+      #   value: false
+      # - domain: 'NSGlobalDomain'
+      #   key: 'ApplePressAndHoldEnabled'
+      #   type: boolean
+      #   value: false
+      # - domain: 'com.apple.desktopservices'
+      #   key: 'DSDontWriteNetworkStores'
+      #   type: boolean
+      #   value: true
+      # - domain: 'com.apple.print.PrintingPrefs'
+      #   key: 'Quit When Finished'
+      #   type: boolean
+      #   value: true
