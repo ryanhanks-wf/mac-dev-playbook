@@ -27,7 +27,7 @@
       - domain: 'NSGlobalDomain'
         key: 'InitialKeyRepeat'
         type: integer
-        value: 10
+        value: 15
 
   vars_files:
     - vars/main.yml
