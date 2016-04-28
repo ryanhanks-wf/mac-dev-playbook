@@ -33,7 +33,6 @@
     - vars/main.yml
 
   tasks:
-    - include: roles/roderik.superlumic-homebrew/tasks/main.yml
     # - include: roles/roderik.superlumic-osx-defaults/tasks/main.yml
     - name: add to sudoers without password
       become: yes
@@ -50,6 +49,7 @@
       become: yes
       become_method: sudo
       shell: pmset  -a sleep 0
+    - include: roles/roderik.superlumic-homebrew/tasks/main.yml
 
     - name: install cask applications
       homebrew_cask: name={{item}} state=present
