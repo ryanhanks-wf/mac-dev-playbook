@@ -28,6 +28,10 @@
         key: 'InitialKeyRepeat'
         type: integer
         value: 15
+      - domain: 'NSGlobalDomain'
+        key: 'com.apple.trackpad.scaling'
+        type: integer
+        value: 3
 
   vars_files:
     - vars/main.yml
